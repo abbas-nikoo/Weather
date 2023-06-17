@@ -3,7 +3,7 @@ import redis
 from celery import Celery
 from celery.schedules import crontab
 
-app = Celery('weather_status', backend='redis://localhost', broker='redis://localhost:6379/0')
+app = Celery('weather', backend='redis://localhost', broker='redis://localhost:6380/0')
 
 url = 'https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}'
 OPEN_WEATHER_API_KEY = '435744b930e3d41b754c08cedd23c364'
@@ -11,7 +11,7 @@ OPEN_WEATHER_API_KEY = '435744b930e3d41b754c08cedd23c364'
 
 @app.task
 def get_weather_status(city: str) -> str:
-    con = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True, charset='utf-8')
+    con = redis.Redis(host='localhost', port=6380, db=0, decode_responses=True, charset='utf-8')
     city_temp = con.get(f"temp_{city}")
     if city_temp is not None:
         return f"{city}: {round(float(city_temp), 2)}C"
